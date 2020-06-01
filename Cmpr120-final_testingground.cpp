@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <string>
 #include <iomanip>
+#include <fstream>
 
 //i got tired of typing out 'std::' over and over again
 using namespace std;
@@ -19,7 +20,7 @@ void Menu();
 
 int inputHandling(int input);
 int loadSettings();
-int writeSettings();
+int writeSettings(int busNo, int sType);
 int createBus();
 int reserveBus();
 
@@ -30,11 +31,14 @@ const int maxBuses = 10;
 //main buffer arrays for bus/seat info
 // found out about 2d arrays, pretty good bro
 
-string busInfo[maxBuses][6];
+string busInfo[maxBuses][5];
 string riderInfo[maxBuses][maxSeats];
 
 //store the state of the menu, so see if needed to redraw after finishing a func
 int menuState = 1;
+
+ifstream dataIn;
+ofstream dataOut;
 
 int main()
 {
@@ -46,8 +50,7 @@ int main()
     Sleep(2000);
     printf("test.");
     Clear();
-    printf("testing again");
-    Sleep(1000);
+    loadSettings();
 
     //actual init of menu/program
     Clear();
@@ -103,7 +106,9 @@ void Menu() {
 int inputHandling(int input) {
     switch (input) {
     case 1:
-
+       
+        return 1;
+        break;
     case 2:
 
     case 3:
@@ -120,6 +125,98 @@ int inputHandling(int input) {
         break;
     };
 }
+
+int loadSettings() {
+    Clear();
+    string fName = " ";
+    //load all the busses into memory
+    for (int i = 0; i < (maxBuses); i++) {
+        fName = ("bus" + to_string(i) + ".txt");
+        dataIn.open(fName);
+        if (dataIn.is_open()) {
+            while (dataIn.good()) {
+                for (int j = 0; j < 5; j++) {
+                    dataIn >> busInfo[i][j];
+                }
+            }
+        }
+        else {
+            cout << endl << "\033[31merror\033[0m: file bus" << (i + 1) << ".txt not found.\n";
+        }
+        dataIn.close();
+    }
+
+    //load all the riders into memory
+    for (int i = 0; i < (maxSeats); i++) {
+        fName = ("busR" + to_string(i) + ".txt");
+        dataIn.open(fName);
+        if (dataIn.is_open()) {
+            while (dataIn.good()) {
+                for (int j = 0; j < maxSeats; j++) {
+                    dataIn >> riderInfo[i][j];
+                }
+            }
+        }
+        else {
+            cout << endl << "\033[31merror\033[0m: file busR" << (i + 1) << ".txt not found.\n";
+        }
+        dataIn.close();
+    }
+    Sleep(5000);
+    return 1;
+}
+
+int createBus() {
+    int i;
+    Clear();
+    cout << endl << endl << endl << endl << endl << endl << endl << endl << endl;
+    cout << setw(65) << "Enter the bus #: ";
+    cin >> i;
+    if (i >= maxBuses) {
+        i = maxBuses;
+    }
+    busInfo[i][0] = to_string(i);
+    cout << setw(65) << "\nEnter driver's name: ";
+    cin >> busInfo[i][1];
+    cout << setw(65) << "\nArrival time: ";
+    cin >> busInfo[i][2];
+    cout << setw(65) << "\nDepart time: ";
+    cin >> busInfo[i][3];
+    cout << setw(65) << "\nFrom: ";
+    cin >> busInfo[i][4];
+    cout << setw(65) << "\nTo: ";
+    cin >> busInfo[i][5];
+    
+    writeSettings(i, 1);
+
+    return 1;
+}
+
+//func to transfer data into 
+int writeSettings(int busNo, int sType) {
+    string fName = " ";
+    if (sType == 1) {
+        fName = "bus" + to_string(busNo) + ".txt";
+        dataOut.open(fName);
+        dataOut << busInfo[(busNo - 1)][0] << endl;
+        dataOut << busInfo[(busNo - 1)][1] << endl;
+        dataOut << busInfo[(busNo - 1)][2] << endl;
+        dataOut << busInfo[(busNo - 1)][3] << endl;
+        dataOut << busInfo[(busNo - 1)][4] << endl;
+        dataOut << busInfo[(busNo - 1)][5] << endl;
+    }
+    else if (sType == 2) {
+        fName = "busR" + to_string(busNo) + ".txt";
+        dataOut.open(fName);
+        for (int i = 0; i < (maxSeats); i++) {
+            dataOut << riderInfo[busNo][i];
+        }
+    }
+
+    dataOut.close();
+    return 1;
+}
+
 
 //func to clear console, hopefully works with all OS's (why did I bother, i used windows.h already, good luck getting it on ubuntu or macos lul
 void Clear() {
