@@ -1,0 +1,14 @@
+
+*.ipch
+*.opendb
+*.db-shm
+*.db
+.vs/Cmpr120-final_testingground/v16/.suo
+*.db-wal
+*.pdb
+*.idb
+Debug/Cmpr120-final_testingground.vcxproj.FileListAbsolute.txt
+*.obj
+*.log
+*.ilk
+*.tlog
