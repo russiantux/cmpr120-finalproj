@@ -11,13 +11,27 @@
 using namespace std;
 
 //prototypes
+
 void Clear();
 void Menu();
+
+//defining most funcs as int's, as a form of data-oriented design & crude error handling.
+
 int inputHandling(int input);
+int loadSettings();
+int writeSettings();
+int createBus();
+int reserveBus();
 
+//const int for number of max bus seats & max buses
+const int maxSeats = 32;
+const int maxBuses = 10;
 
+//main buffer arrays for bus/seat info
+// found out about 2d arrays, pretty good bro
 
-
+string busInfo[maxBuses][6];
+string riderInfo[maxBuses][maxSeats];
 
 //store the state of the menu, so see if needed to redraw after finishing a func
 int menuState = 1;
@@ -35,7 +49,7 @@ int main()
     printf("testing again");
     Sleep(1000);
 
-    //actual init of menu
+    //actual init of menu/program
     Clear();
     Menu();
 
@@ -50,8 +64,9 @@ void Menu() {
 
     while (menuState == 1) {
 
-        //i spent too much time making it look somewhat neat, windows api are a pain to deal with.
+        //i spent too much time making it look somewhat neat. windows api are a pain to deal with, so I stuck with setw() and ANSI color tables.
         Clear();
+        //hey, it works.
         cout << endl << endl << endl << endl << endl << endl << endl << endl << endl;
         cout << setw(91) << "\033[1;36mAirport Transport Bus Reservation System\033[0m\n";
         cout << setw(73) << " Viktor Lazarev | CMPR-120\n" << endl;
@@ -61,6 +76,8 @@ void Menu() {
         cout << setw(65) << "3. option 3 \n";
         cout << setw(65) << "4. option 4 \n";
         cout << setw(61) << "5. quit \n";
+
+        //adjusting the last cout and not adding a new line to make the cursor somewhat centered
         cout << endl << setw(65) << "enter option: ";
         cin >> usrInput;
 
